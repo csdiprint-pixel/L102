@@ -173,22 +173,32 @@
                 margin: 0 auto !important;
             }
 
-            @media (max-width: 375px) {
-                .classroom-grid, .stage-area { zoom: 0.32 !important; }
-            }
-            @media (min-width: 376px) and (max-width: 414px) {
-                .classroom-grid, .stage-area { zoom: 0.35 !important; }
-            }
-            @media (min-width: 415px) and (max-width: 440px) {
-                .classroom-grid, .stage-area { zoom: 0.38 !important; }
-            }
-            @media (min-width: 441px) and (max-width: 768px) {
-                .classroom-grid, .stage-area { zoom: 0.55 !important; }
-            }
+           /* --- 方案二：免縮放！大格子地圖式流暢滑動版 --- */
+            @media (max-width: 768px) {
+                /* 1. 取消縮放，讓格子保持好點擊的大尺寸 */
+                .classroom-grid, .stage-area {
+                    zoom: normal !important;
+                    transform: none !important;
+                }
 
-            .main-container {
-                padding: 10px 4px !important;
-                overflow-x: auto !important;
+                /* 2. 開啟水平滾動與流暢滑動 */
+                .main-container {
+                    padding: 15px 10px !important;
+                    overflow-x: auto !important; 
+                    -webkit-overflow-scrolling: touch; 
+                }
+
+                /* 3. 美化手機板的底部滑動拉桿 */
+                .main-container::-webkit-scrollbar {
+                    height: 8px !important; 
+                }
+                .main-container::-webkit-scrollbar-thumb {
+                    background-color: #a0aec0 !important; 
+                    border-radius: 4px !important;
+                }
+                .main-container::-webkit-scrollbar-track {
+                    background: #edf2f7 !important;
+                }
             }
             
             .nav-bar { padding: 12px 8px !important; }
