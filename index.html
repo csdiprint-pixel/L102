@@ -642,10 +642,17 @@
                     }
                 }
 
-                // 5. 走道安插 (在第 3, 6, 9, 12 欄後方安插實體走道)
-                if (col === 3 || col === 6 || col === 9 || col === 12) {
-                    html += `<td class="aisle"></td>`;
-                }
+                // 5. 走道安插 (在第 3, 6, 9, 12 欄後方安插走道)
+if (col === 3 || col === 6 || col === 9) {
+    html += `<td class="aisle"></td>`;
+} else if (col === 12) {
+    // 消除門到投影布幕間 (第1~3排) 的右側實體走道，改為透明佔位格以維持版面不變形
+    if (row <= 3) {
+        html += `<td style="width: 12px !important; min-width: 12px !important; max-width: 12px !important; border: none; background: transparent;"></td>`;
+    } else {
+        html += `<td class="aisle"></td>`;
+    }
+}
             }
             html += "</tr>";
         }
