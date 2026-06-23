@@ -709,7 +709,7 @@ async function processRosterText() {
             dbRosters[currentClassID] = officialRoster;
             
             localStorage.setItem("seat_db_titles_102", JSON.stringify(dbTitles));
-            localStorage.setItem("seat_db_rosters_502", JSON.stringify(dbRosters));
+            localStorage.setItem("seat_db_rosters_102", JSON.stringify(dbRosters));
 
             await fetch(`${FIREBASE_URL}/room102/${currentClassID}/title.json`, { method: 'PUT', body: JSON.stringify(classHeaderTitle) });
             await fetch(`${FIREBASE_URL}/room102/${currentClassID}/roster.json`, { method: 'PUT', body: JSON.stringify(officialRoster) });
