@@ -219,7 +219,7 @@
             <div id="zoneSelectionArea" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 30px 10px;">
                 <h2 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 26px;">請選擇您的座位區域</h2>
                 <button onclick="selectZone('A')" style="width: 100%; max-width: 350px; padding: 20px; font-size: 24px; font-weight: bold; background: #2980b9; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;">左半區 (1~9欄)</button>
-                <button onclick="selectZone('B')" style="width: 100%; max-width: 350px; padding: 20px; font-size: 24px; font-weight: bold; background: #e67e22; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;">右半區 (10~14欄)</button>
+                <button onclick="selectZone('B')" style="width: 100%; max-width: 350px; padding: 20px; font-size: 24px; font-weight: bold; background: #e67e22; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;">右半區 (10~14排)</button>
             </div>
 
             <div id="seatingChartArea" style="display: none;">
@@ -278,7 +278,7 @@
                 <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 120px;">
                         <label style="font-size: 16px; font-weight: bold; color:#555;">座位 (例: 1-1)</label>
-                        <input type="text" id="modSeatId" placeholder="排-欄" style="width:100%; padding:12px; border:2px solid #ccc; border-radius:6px; box-sizing:border-box; font-size: 18px;">
+                        <input type="text" id="modSeatId" placeholder="排-排" style="width:100%; padding:12px; border:2px solid #ccc; border-radius:6px; box-sizing:border-box; font-size: 18px;">
                     </div>
                     <div style="flex: 2; min-width: 180px;">
                         <label style="font-size: 16px; font-weight: bold; color:#555;">正確學員姓名</label>
@@ -379,7 +379,7 @@
         if (zone === 'A') {
             document.getElementById("stageBox").innerText = "講台(白板)";
         } else {
-            document.getElementById("stageBox").innerText = "前方為 1~9 欄座位區";
+            document.getElementById("stageBox").innerText = "前方為 1~9 排座位區";
         }
         
         renderSeatsGrid(); 
@@ -620,14 +620,14 @@
             
             for (let col = 1; col <= 14; col++) {
                 
-                // 區域過濾邏輯：判斷該欄是否屬於當前選擇的區域
+                // 區域過濾邏輯：判斷該排是否屬於當前選擇的區域
                 let renderCol = true;
                 if (activeZone === 'A' && col >= 10) renderCol = false;
                 if (activeZone === 'B' && col <= 9) renderCol = false;
 
                 let isRendered = false;
 
-                // 1. 處理特殊障礙物：大柱子 (移至第8排, 4~6欄)
+                // 1. 處理特殊障礙物：大柱子 (移至第8排, 4~6排)
                 if (row === 8 && col === 4) {
                     if (renderCol) {
                         html += `<td colspan="3" style="background:#b30000; color:white; font-size:26px; font-weight:bold; letter-spacing:8px; border-radius:6px; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); border: 2px solid #500; cursor:default;">柱子</td>`;
@@ -649,7 +649,7 @@
                         html += `<td class="empty-seat"></td>`;
                     }
                 }
-                if (row === 3 && col === 11) col = 12; // 佔據 11, 12 欄
+                if (row === 3 && col === 11) col = 12; // 佔據 11, 12 排
                 isRendered = true;
             }
 
