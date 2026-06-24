@@ -39,14 +39,13 @@
 
         .classroom-grid { display: flex; justify-content: center; align-items: stretch; overflow-x: auto; padding-bottom: 30px; margin-top: 10px; }
 
-        /* 核心修正：102 教室更寬，因此將寬度改為 1680px 確保不變形 */
+        /* 修改：讓寬度自動適應，不再強制留白 */
         .seat-table { 
             border-collapse: separate; 
             border-spacing: 6px 8px; 
             table-layout: fixed; 
-            width: 1680px; 
-            min-width: 1680px; 
-            margin: 0; 
+            width: auto; 
+            margin: 0 auto; 
         }
         
         /* 一般座位統一設定 */
@@ -147,58 +146,60 @@
             body { background-color: #fff; padding: 0; margin: 0; font-size: 16px; }
             .nav-bar, #adminPage, .scroll-hint, .modal-overlay { display: none !important; }
             #studentPage { display: block !important; }
+            /* 新增：列印時強制顯示座位表，隱藏選單 */
+            #zoneSelectionArea { display: none !important; }
+            #seatingChartArea { display: block !important; }
             .main-container { box-shadow: none; padding: 0; margin: 0; }
             .seat-table td { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 16px; width: 80px; height: 60px;}
             .seat-table td.aisle { background: #e2e8f0 !important; border: none; }
         }
 
-/* 手機螢幕等比例縮放配適 (維持你原本或微調過的 zoom) */
-            @media (max-width: 375px) {
-                .classroom-grid, .stage-area { zoom: 0.32 !important; }
-            }
-            @media (min-width: 376px) and (max-width: 414px) {
-                .classroom-grid, .stage-area { zoom: 0.35 !important; }
-            }
-            @media (min-width: 415px) and (max-width: 440px) {
-                .classroom-grid, .stage-area { zoom: 0.38 !important; }
-            }
-            @media (min-width: 441px) and (max-width: 768px) {
-                .classroom-grid, .stage-area { zoom: 0.55 !important; }
-            }
+        /* 手機螢幕等比例縮放配適 */
+        @media (max-width: 375px) {
+            .classroom-grid, .stage-area { zoom: 0.32 !important; }
+        }
+        @media (min-width: 376px) and (max-width: 414px) {
+            .classroom-grid, .stage-area { zoom: 0.35 !important; }
+        }
+        @media (min-width: 415px) and (max-width: 440px) {
+            .classroom-grid, .stage-area { zoom: 0.38 !important; }
+        }
+        @media (min-width: 441px) and (max-width: 768px) {
+            .classroom-grid, .stage-area { zoom: 0.55 !important; }
+        }
 
-            /* 容器設定：開啟左右滑動與流暢慣性 */
-            .main-container {
-                padding: 10px 4px !important;
-                overflow-x: auto !important; /* 確保右邊不會被一刀切斷 */
-                -webkit-overflow-scrolling: touch !important; /* ★ 加入這行：開啟手機原生流暢慣性滑動 ★ */
-            }
-            
-            .nav-bar { padding: 12px 8px !important; }
-            .nav-bar span { font-size: 18px !important; }
-            .nav-btn { font-size: 15px !important; padding: 6px 12px !important; }
+        /* 容器設定：開啟左右滑動與流暢慣性 */
+        .main-container {
+            padding: 10px 4px !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        
+        .nav-bar { padding: 12px 8px !important; }
+        .nav-bar span { font-size: 18px !important; }
+        .nav-btn { font-size: 15px !important; padding: 6px 12px !important; }
 
-            .modal-overlay { zoom: 1 !important; }
-            .modal-body {
-                width: 85% !important;
-                max-width: 360px !important;
-                padding: 20px !important;
-            }
-            .modal-body h3 { font-size: 22px !important; }
-            #targetSeatLabel { font-size: 24px !important; }
-            .modal-body input { font-size: 18px !important; padding: 8px !important; }
-            .btn { font-size: 18px !important; padding: 8px !important; }
+        .modal-overlay { zoom: 1 !important; }
+        .modal-body {
+            width: 85% !important;
+            max-width: 360px !important;
+            padding: 20px !important;
+        }
+        .modal-body h3 { font-size: 22px !important; }
+        #targetSeatLabel { font-size: 24px !important; }
+        .modal-body input { font-size: 18px !important; padding: 8px !important; }
+        .btn { font-size: 18px !important; padding: 8px !important; }
 
-            .seat-num, .seat-num-empty {
-                font-size: 32px !important;
-                font-weight: 900;
-                line-height: 1;
-                display: inline-block;
-                margin-bottom: 2px;
-            }
-            .seat-name {
-                font-size: 20px !important;
-                display: inline-block;
-            }
+        .seat-num, .seat-num-empty {
+            font-size: 32px !important;
+            font-weight: 900;
+            line-height: 1;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+        .seat-name {
+            font-size: 20px !important;
+            display: inline-block;
         }
     </style>
 </head>
@@ -214,15 +215,27 @@
             <div class="class-info-header" id="displayClassHeader">
                 圖102教室線上選位表 (請由管理員自後台載入班期)
             </div>
-            <div class="scroll-hint">⇿ 畫面可左右滑動查看完整座位 ⇿</div>
 
-            <div class="stage-area">
-                <div class="stage-box">講台(白板)</div>
+            <div id="zoneSelectionArea" style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 30px 10px;">
+                <h2 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 26px;">請選擇您的座位區域</h2>
+                <button onclick="selectZone('A')" style="width: 100%; max-width: 350px; padding: 20px; font-size: 24px; font-weight: bold; background: #2980b9; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;">講台前區 (1~9欄)</button>
+                <button onclick="selectZone('B')" style="width: 100%; max-width: 350px; padding: 20px; font-size: 24px; font-weight: bold; background: #e67e22; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;">投影布幕區 (10~14欄)</button>
             </div>
 
-            <div class="classroom-grid">
-                <table class="seat-table" id="classroomSeats">
-                </table>
+            <div id="seatingChartArea" style="display: none;">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <button onclick="backToZoneSelection()" style="padding: 10px 20px; font-size: 18px; font-weight: bold; background: #7f8c8d; color: white; border: none; border-radius: 6px; cursor: pointer;">⬅ 返回區域選擇</button>
+                </div>
+                <div class="scroll-hint">⇿ 畫面可左右滑動查看完整座位 ⇿</div>
+
+                <div class="stage-area">
+                    <div class="stage-box" id="stageBox">講台(白板)</div>
+                </div>
+
+                <div class="classroom-grid">
+                    <table class="seat-table" id="classroomSeats">
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -344,6 +357,9 @@
     let activeSeatId = "";      
     let isVerifyVisualOn = false; 
 
+    // 新增：區域選擇狀態
+    let currentZone = null;
+
     let adminPassword = "102"; 
     let currentClassID = getUrlParam("class") || ""; 
 
@@ -353,6 +369,27 @@
     let classHeaderTitle = dbTitles[currentClassID] || "圖102教室線上選位表 (請由管理員自後台載入班期)";
     let officialRoster = dbRosters[currentClassID] || [];
     let studentFilledData = {}; 
+
+    // 新增：區域選擇與返回功能
+    function selectZone(zone) {
+        currentZone = zone;
+        document.getElementById("zoneSelectionArea").style.display = "none";
+        document.getElementById("seatingChartArea").style.display = "block";
+        
+        if (zone === 'A') {
+            document.getElementById("stageBox").innerText = "講台(白板)";
+        } else {
+            document.getElementById("stageBox").innerText = "前方為 1~9 欄座位區";
+        }
+        
+        renderSeatsGrid(); 
+    }
+
+    function backToZoneSelection() {
+        currentZone = null;
+        document.getElementById("seatingChartArea").style.display = "none";
+        document.getElementById("zoneSelectionArea").style.display = "flex";
+    }
 
     function maskName(name) {
         if (!name) return "";
@@ -478,6 +515,15 @@
             document.getElementById("studentPage").classList.add("active");
             document.getElementById("navToggleBtn").innerText = "管理後台";
             currentPage = "student";
+
+            // 確保返回前台時，維持正確的區域顯示狀態
+            if (currentZone) {
+                document.getElementById("zoneSelectionArea").style.display = "none";
+                document.getElementById("seatingChartArea").style.display = "block";
+            } else {
+                document.getElementById("zoneSelectionArea").style.display = "flex";
+                document.getElementById("seatingChartArea").style.display = "none";
+            }
             renderSeatsGrid(); 
         }
     }
@@ -557,7 +603,7 @@
         }
     }
 
-    // ★ 102 教室專用渲染邏輯
+    // ★ 全新渲染邏輯 (含區域過濾與柱子位移)
     function renderSeatsGrid() {
         document.getElementById("displayClassHeader").innerText = classHeaderTitle;
         const table = document.getElementById("classroomSeats");
@@ -565,43 +611,56 @@
 
         const myBookedSeat = localStorage.getItem(`mySeat_102_${currentClassID}`);
         const isBackend = (currentPage === "admin");
+        
+        // 前台依選擇區域顯示，後台則顯示全區(null)以利管理
+        const activeZone = isBackend ? null : currentZone; 
 
-        // 圖102教室：總共 8 排
         for (let row = 1; row <= 8; row++) {
             html += "<tr>";
             
-            // 處理 14 個座位欄位 + 4 個走道欄位
             for (let col = 1; col <= 14; col++) {
                 
+                // 區域過濾邏輯：判斷該欄是否屬於當前選擇的區域
+                let renderCol = true;
+                if (activeZone === 'A' && col >= 10) renderCol = false;
+                if (activeZone === 'B' && col <= 9) renderCol = false;
+
                 let isRendered = false;
 
-                // 1. 處理特殊障礙物：大柱子 (第7排, 4~6欄)
-                if (row === 7 && col === 4) {
-                    html += `<td colspan="3" style="background:#b30000; color:white; font-size:26px; font-weight:bold; letter-spacing:8px; border-radius:6px; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); border: 2px solid #500; cursor:default;">柱子</td>`;
-                    col = 6; // 跳過 5 和 6
+                // 1. 處理特殊障礙物：大柱子 (移至第8排, 4~6欄)
+                if (row === 8 && col === 4) {
+                    if (renderCol) {
+                        html += `<td colspan="3" style="background:#b30000; color:white; font-size:26px; font-weight:bold; letter-spacing:8px; border-radius:6px; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); border: 2px solid #500; cursor:default;">柱子</td>`;
+                    }
+                    col = 6; 
                     isRendered = true;
                 }
                 
                 // 2. 處理門與投影布幕 (第1~3排右側無座位區)
-                if (!isRendered && row <= 3 && col >= 10) {
+            if (!isRendered && row <= 3 && col >= 10) {
+                if (renderCol) {
                     if (row === 1 && col === 11) {
-                        html += `<td class="empty-seat" style="color:#d32f2f; font-size:26px; font-weight:bold;">門</td>`;
+                        // 【修改此處】為門加上紅色外框與白底
+                        html += `<td class="empty-seat" style="color:#d32f2f; font-size:26px; font-weight:bold; border: 3px solid #d32f2f !important; background-color: #fff !important; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;">門</td>`;
                     } else if (row === 3 && col === 11) {
-                        html += `<td colspan="2" class="empty-seat" style="font-size:22px; font-weight:bold;">投影布幕</td>`;
-                        col = 12; // 佔據 11, 12 欄
+                        // 【修改此處】為投影布幕加上深黃色外框與淺黃底色
+                        html += `<td colspan="2" class="empty-seat" style="font-size:24px; font-weight:bold; border: 3px solid #f39c12 !important; background-color: #fef9e7 !important; color: #d68910; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;">投影布幕</td>`;
                     } else {
                         html += `<td class="empty-seat"></td>`;
                     }
-                    isRendered = true;
                 }
+                if (row === 3 && col === 11) col = 12; // 佔據 11, 12 欄
+                isRendered = true;
+            }
 
-                // 3. 處理其他無座位區域 (第4排13-14、第8排4-6、第8排13-14)
+                // 3. 處理其他無座位區域 (第4排13-14、第8排13-14)
                 if (!isRendered && (
                     (row === 4 && col >= 13) ||
-                    (row === 8 && col >= 4 && col <= 6) ||
                     (row === 8 && col >= 13)
                 )) {
-                    html += `<td class="empty-seat"></td>`;
+                    if (renderCol) {
+                        html += `<td class="empty-seat"></td>`;
+                    }
                     isRendered = true;
                 }
 
@@ -611,37 +670,40 @@
                     const name = studentFilledData[seatCode];
                     const isMySeat = (seatCode === myBookedSeat);
                     
-                    if (name) {
-                        let tdClass = isMySeat ? "booked my-seat" : "booked";
-                        if (isVerifyVisualOn) { tdClass = officialRoster.includes(name) ? "verified-match" : "verified-error"; }
-                        
-                        let displayName = name;
-                        if (!isBackend && !isMySeat) { displayName = maskName(name); }
-                        
-                        html += `<td class="${tdClass}" onclick="handleSeatClick('${seatCode}')"><span class="seat-num">${seatCode}</span><br><span class="seat-name">${displayName}</span></td>`;
-                    } else {
-                        html += `<td onclick="handleSeatClick('${seatCode}')"><span class="seat-num-empty">${seatCode}</span></td>`;
+                    if (renderCol) {
+                        if (name) {
+                            let tdClass = isMySeat ? "booked my-seat" : "booked";
+                            if (isVerifyVisualOn) { tdClass = officialRoster.includes(name) ? "verified-match" : "verified-error"; }
+                            
+                            let displayName = name;
+                            if (!isBackend && !isMySeat) { displayName = maskName(name); }
+                            
+                            html += `<td class="${tdClass}" onclick="handleSeatClick('${seatCode}')"><span class="seat-num">${seatCode}</span><br><span class="seat-name">${displayName}</span></td>`;
+                        } else {
+                            html += `<td onclick="handleSeatClick('${seatCode}')"><span class="seat-num-empty">${seatCode}</span></td>`;
+                        }
                     }
                 }
 
-                // 5. 走道安插 (在第 3, 6, 9, 12 欄後方安插走道)
-if (col === 3 || col === 6 || col === 9) {
-    html += `<td class="aisle"></td>`;
-} else if (col === 12) {
-    // 消除門到投影布幕間 (第1~3排) 的右側實體走道，改為透明佔位格以維持版面不變形
-    if (row <= 3) {
-        html += `<td style="width: 12px !important; min-width: 12px !important; max-width: 12px !important; border: none; background: transparent;"></td>`;
-    } else {
-        html += `<td class="aisle"></td>`;
-    }
-}
+                // 5. 走道安插 (依據區域決定是否隱藏走道)
+                if (col === 3 || col === 6 || col === 9) {
+                    if (activeZone !== 'B' && renderCol) { html += `<td class="aisle"></td>`; }
+                } else if (col === 12) {
+                    if (activeZone !== 'A' && renderCol) {
+                        if (row <= 3) {
+                            html += `<td style="width: 12px !important; min-width: 12px !important; max-width: 12px !important; border: none; background: transparent;"></td>`;
+                        } else {
+                            html += `<td class="aisle"></td>`;
+                        }
+                    }
+                }
             }
             html += "</tr>";
         }
         table.innerHTML = html;
     }
 
-async function processRosterText() {
+    async function processRosterText() {
         const text = document.getElementById("rawRosterInput").value;
         if (!text.trim()) { alert("請先貼入名冊文字內容！"); return; }
 
@@ -664,12 +726,8 @@ async function processRosterText() {
             currentClassID = classCode;
             classHeaderTitle = `${classCode}${className}-${formattedDate}`;
 
-            // 修改點 1：改用陣列 (Array) 儲存，這樣「小叮噹」出現幾次就會抓幾次
             const extractedNames = [];
-            
-            // 修改點 2：放寬判斷條件，支援 2~8 個字，且允許括號、符號等格式
             const nameRegex = /^(?=.*[\u4e00-\u9fa5a-zA-Z0-9]).{2,8}$/;
-            
             const excludeHeaders = ["姓名", "座號", "機關", "機關學校", "職稱", "單位", "備註", "受訓日期", "簽到", "備註欄", "報到簽名", "簽到欄"];
             const tokens = text.split(/[\s\t\n\r,，、]+/);
 
@@ -762,7 +820,7 @@ async function processRosterText() {
         }
     }
 
-function handleSeatClick(seatCode) {
+    function handleSeatClick(seatCode) {
         if (!currentClassID) {
             alert("目前尚未由後台載入班期。請先由管理員至後台貼入名冊開班！");
             return;
@@ -771,9 +829,8 @@ function handleSeatClick(seatCode) {
         
         const existingName = studentFilledData[seatCode] || "";
         const myBookedSeat = localStorage.getItem(`mySeat_102_${currentClassID}`); 
-        const isBackend = (currentPage === "admin"); // 判斷是否為管理員後台
+        const isBackend = (currentPage === "admin");
 
-        // 【新增攔截邏輯】如果是前台學生，且點擊的座位已有人，且不是自己的座位 -> 直接無反應不跳視窗
         if (!isBackend && existingName && myBookedSeat !== seatCode) {
             return; 
         }
@@ -855,7 +912,6 @@ function handleSeatClick(seatCode) {
 
         if (!seatId || !studentName) { alert("請輸入座位編號與姓名！"); return; }
         
-        // 圖102格式驗證：1-1 到 8-14
         if (!/^([1-8])-([1-9]|1[0-4])$/.test(seatId)) { 
             alert("座位格式錯誤 (圖102教室正確為 1-1 到 8-14)！"); 
             return; 
@@ -865,11 +921,10 @@ function handleSeatClick(seatCode) {
         const r = parseInt(parts[0]);
         const c = parseInt(parts[1]);
 
-        // 阻擋寫入走道、門、柱子或畸零地
+        // 修改：阻擋寫入時，柱子已移至第8排
         if (
             (r <= 3 && c >= 10) || 
             (r === 4 && c >= 13) ||
-            (r === 7 && c >= 4 && c <= 6) ||
             (r === 8 && c >= 4 && c <= 6) ||
             (r === 8 && c >= 13)
         ) { 
@@ -909,20 +964,19 @@ function handleSeatClick(seatCode) {
         let matchCount = 0;
         let errorNames = [];
 
-        // 修改點 3：複製一份名單進行「消去法」，完美核實同名同姓的數量
         let rosterCheckList = [...officialRoster];
 
         filledNames.forEach(name => {
             const idx = rosterCheckList.indexOf(name);
             if (idx !== -1) {
                 matchCount++;
-                rosterCheckList.splice(idx, 1); // 核對成功就從清單中劃掉一位
+                rosterCheckList.splice(idx, 1); 
             } else {
                 errorNames.push(name);
             }
         });
 
-        const missingStudents = rosterCheckList; // 剩下沒被劃掉的即為缺席
+        const missingStudents = rosterCheckList; 
         const report = document.getElementById("adminReport");
         report.style.display = "block";
         report.innerHTML = `
